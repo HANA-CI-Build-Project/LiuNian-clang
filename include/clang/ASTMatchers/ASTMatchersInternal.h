@@ -149,7 +149,7 @@ public:
   ///
   /// The node's base type should be in NodeBaseType or it will be unaccessible.
   void addNode(StringRef ID, const ast_type_traits::DynTypedNode& DynNode) {
-    NodeMap[ID] = DynNode;
+    NodeMap[std::string(ID)] = DynNode;
   }
 
   /// Returns the AST node bound to \c ID.
@@ -363,6 +363,10 @@ public:
     /// matches, but doesn't stop at the first match.
     VO_EachOf,
 
+    /// Matches any node but executes all inner matchers to find result
+    /// bindings.
+    VO_Optionally,
+
     /// Matches nodes that do not match the provided matcher.
     ///
     /// Uses the variadic matcher interface, but fails if
@@ -512,8 +516,8 @@ public:
   /// Requires \c T to be derived from \c From.
   template <typename From>
   Matcher(const Matcher<From> &Other,
-          typename std::enable_if<std::is_base_of<From, T>::value &&
-                               !std::is_same<From, T>::value>::type * = nullptr)
+          std::enable_if_t<std::is_base_of<From, T>::value &&
+                           !std::is_same<From, T>::value> * = nullptr)
       : Implementation(restrictMatcher(Other.Implementation)) {
     assert(Implementation.getSupportedKind().isSame(
         ast_type_traits::ASTNodeKind::getFromNodeKind<T>()));
@@ -524,9 +528,8 @@ public:
   /// The resulting matcher is not strict, i.e. ignores qualifiers.
   template <typename TypeT>
   Matcher(const Matcher<TypeT> &Other,
-          typename std::enable_if<
-            std::is_same<T, QualType>::value &&
-            std::is_same<TypeT, Type>::value>::type* = nullptr)
+          std::enable_if_t<std::is_same<T, QualType>::value &&
+                           std::is_same<TypeT, Type>::value> * = nullptr)
       : Implementation(new TypeToQualType<TypeT>(Other)) {}
 
   /// Convert \c this into a \c Matcher<T> by applying dyn_cast<> to the
@@ -1868,6 +1871,13 @@ CompoundStmtMatcher<StmtExpr>::get(const StmtExpr &Node) {
   return Node.getSubStmt();
 }
 
+/// If \p Loc is (transitively) expanded from macro \p MacroName, returns the
+/// location (in the chain of expansions) at which \p MacroName was
+/// expanded. Since the macro may have been expanded inside a series of
+/// expansions, that location may itself be a MacroID.
+llvm::Optional<SourceLocation>
+getExpansionLocOfMacro(StringRef MacroName, SourceLocation Loc,
+                       const ASTContext &Context);
 } // namespace internal
 
 } // namespace ast_matchers

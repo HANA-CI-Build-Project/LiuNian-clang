@@ -8,8 +8,8 @@ set(Polly_BUNDLED_ISL ON)
 set(Polly_ENABLE_GPGPU_CODEGEN OFF)
 
 set(Polly_DEFINITIONS ${LLVM_DEFINITIONS})
-set(Polly_INCLUDE_DIRS /home/julian/tc-build/install/include;/home/julian/tc-build/install/include/polly ${LLVM_INCLUDE_DIRS})
-set(Polly_LIBRARY_DIRS /home/julian/tc-build/install/lib)
+set(Polly_INCLUDE_DIRS /home/julian/tc-build/installTmp/include;/home/julian/tc-build/installTmp/include/polly ${LLVM_INCLUDE_DIRS})
+set(Polly_LIBRARY_DIRS /home/julian/tc-build/installTmp/lib)
 set(Polly_EXPORTED_TARGETS Polly;PollyISL;LLVMPolly)
 set(Polly_LIBRARIES ${LLVM_LIBRARIES} ${Polly_EXPORTED_TARGETS})
 

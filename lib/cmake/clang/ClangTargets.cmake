@@ -89,7 +89,7 @@ set_target_properties(clangDynamicASTMatchers PROPERTIES
 add_library(clangASTMatchers STATIC IMPORTED)
 
 set_target_properties(clangASTMatchers PROPERTIES
-  INTERFACE_LINK_LIBRARIES "clangAST;clangBasic;LLVMSupport"
+  INTERFACE_LINK_LIBRARIES "clangAST;clangBasic;clangLex;LLVMSupport"
 )
 
 # Create imported target clangCrossTU

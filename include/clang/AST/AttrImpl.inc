@@ -1334,6 +1334,48 @@ const char *ArmMveAliasAttr::getSpelling() const {
   }
 }
 
+ArmMveStrictPolymorphismAttr *ArmMveStrictPolymorphismAttr::clone(ASTContext &C) const {
+  auto *A = new (C) ArmMveStrictPolymorphismAttr(C, *this);
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->setImplicit(Implicit);
+  return A;
+}
+
+void ArmMveStrictPolymorphismAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+  switch (getAttributeSpellingListIndex()) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    break;
+  case 0 : {
+    OS << " __attribute__((__clang_arm_mve_strict_polymorphism))";
+    break;
+  }
+  case 1 : {
+    OS << " [[clang::__clang_arm_mve_strict_polymorphism]]";
+    break;
+  }
+  case 2 : {
+    OS << " [[clang::__clang_arm_mve_strict_polymorphism]]";
+    break;
+  }
+}
+}
+
+const char *ArmMveStrictPolymorphismAttr::getSpelling() const {
+  switch (getAttributeSpellingListIndex()) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    return "(No spelling)";
+  case 0:
+    return "__clang_arm_mve_strict_polymorphism";
+  case 1:
+    return "__clang_arm_mve_strict_polymorphism";
+  case 2:
+    return "__clang_arm_mve_strict_polymorphism";
+  }
+}
+
 ArtificialAttr *ArtificialAttr::clone(ASTContext &C) const {
   auto *A = new (C) ArtificialAttr(C, *this);
   A->Inherited = Inherited;
@@ -1883,6 +1925,36 @@ const char *CFConsumedAttr::getSpelling() const {
     return "cf_consumed";
   case 2:
     return "cf_consumed";
+  }
+}
+
+CFGuardAttr *CFGuardAttr::clone(ASTContext &C) const {
+  auto *A = new (C) CFGuardAttr(C, *this, guard);
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->setImplicit(Implicit);
+  return A;
+}
+
+void CFGuardAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+  switch (getAttributeSpellingListIndex()) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    break;
+  case 0 : {
+    OS << " __declspec(guard(\"" << CFGuardAttr::ConvertGuardArgToStr(getGuard()) << "\"))";
+    break;
+  }
+}
+}
+
+const char *CFGuardAttr::getSpelling() const {
+  switch (getAttributeSpellingListIndex()) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    return "(No spelling)";
+  case 0:
+    return "guard";
   }
 }
 
@@ -8892,6 +8964,42 @@ const char *PassObjectSizeAttr::getSpelling() const {
   }
 }
 
+PatchableFunctionEntryAttr *PatchableFunctionEntryAttr::clone(ASTContext &C) const {
+  auto *A = new (C) PatchableFunctionEntryAttr(C, *this, count, offset);
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->setImplicit(Implicit);
+  return A;
+}
+
+void PatchableFunctionEntryAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+  switch (getAttributeSpellingListIndex()) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    break;
+  case 0 : {
+    OS << " __attribute__((patchable_function_entry(" << getCount() << ", " << getOffset() << ")))";
+    break;
+  }
+  case 1 : {
+    OS << " [[gnu::patchable_function_entry(" << getCount() << ", " << getOffset() << ")]]";
+    break;
+  }
+}
+}
+
+const char *PatchableFunctionEntryAttr::getSpelling() const {
+  switch (getAttributeSpellingListIndex()) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    return "(No spelling)";
+  case 0:
+    return "patchable_function_entry";
+  case 1:
+    return "patchable_function_entry";
+  }
+}
+
 PcsAttr *PcsAttr::clone(ASTContext &C) const {
   auto *A = new (C) PcsAttr(C, *this, pCS);
   A->Inherited = Inherited;
@@ -12041,6 +12149,8 @@ const char *Attr::getSpelling() const {
     return cast<ArgumentWithTypeTagAttr>(this)->getSpelling();
   case attr::ArmMveAlias:
     return cast<ArmMveAliasAttr>(this)->getSpelling();
+  case attr::ArmMveStrictPolymorphism:
+    return cast<ArmMveStrictPolymorphismAttr>(this)->getSpelling();
   case attr::Artificial:
     return cast<ArtificialAttr>(this)->getSpelling();
   case attr::AsmLabel:
@@ -12067,6 +12177,8 @@ const char *Attr::getSpelling() const {
     return cast<CFAuditedTransferAttr>(this)->getSpelling();
   case attr::CFConsumed:
     return cast<CFConsumedAttr>(this)->getSpelling();
+  case attr::CFGuard:
+    return cast<CFGuardAttr>(this)->getSpelling();
   case attr::CFICanonicalJumpTable:
     return cast<CFICanonicalJumpTableAttr>(this)->getSpelling();
   case attr::CFReturnsNotRetained:
@@ -12417,6 +12529,8 @@ const char *Attr::getSpelling() const {
     return cast<PascalAttr>(this)->getSpelling();
   case attr::PassObjectSize:
     return cast<PassObjectSizeAttr>(this)->getSpelling();
+  case attr::PatchableFunctionEntry:
+    return cast<PatchableFunctionEntryAttr>(this)->getSpelling();
   case attr::Pcs:
     return cast<PcsAttr>(this)->getSpelling();
   case attr::Pointer:
@@ -12639,6 +12753,8 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<ArgumentWithTypeTagAttr>(this)->clone(C);
   case attr::ArmMveAlias:
     return cast<ArmMveAliasAttr>(this)->clone(C);
+  case attr::ArmMveStrictPolymorphism:
+    return cast<ArmMveStrictPolymorphismAttr>(this)->clone(C);
   case attr::Artificial:
     return cast<ArtificialAttr>(this)->clone(C);
   case attr::AsmLabel:
@@ -12665,6 +12781,8 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<CFAuditedTransferAttr>(this)->clone(C);
   case attr::CFConsumed:
     return cast<CFConsumedAttr>(this)->clone(C);
+  case attr::CFGuard:
+    return cast<CFGuardAttr>(this)->clone(C);
   case attr::CFICanonicalJumpTable:
     return cast<CFICanonicalJumpTableAttr>(this)->clone(C);
   case attr::CFReturnsNotRetained:
@@ -13015,6 +13133,8 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<PascalAttr>(this)->clone(C);
   case attr::PassObjectSize:
     return cast<PassObjectSizeAttr>(this)->clone(C);
+  case attr::PatchableFunctionEntry:
+    return cast<PatchableFunctionEntryAttr>(this)->clone(C);
   case attr::Pcs:
     return cast<PcsAttr>(this)->clone(C);
   case attr::Pointer:
@@ -13237,6 +13357,8 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<ArgumentWithTypeTagAttr>(this)->printPretty(OS, Policy);
   case attr::ArmMveAlias:
     return cast<ArmMveAliasAttr>(this)->printPretty(OS, Policy);
+  case attr::ArmMveStrictPolymorphism:
+    return cast<ArmMveStrictPolymorphismAttr>(this)->printPretty(OS, Policy);
   case attr::Artificial:
     return cast<ArtificialAttr>(this)->printPretty(OS, Policy);
   case attr::AsmLabel:
@@ -13263,6 +13385,8 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<CFAuditedTransferAttr>(this)->printPretty(OS, Policy);
   case attr::CFConsumed:
     return cast<CFConsumedAttr>(this)->printPretty(OS, Policy);
+  case attr::CFGuard:
+    return cast<CFGuardAttr>(this)->printPretty(OS, Policy);
   case attr::CFICanonicalJumpTable:
     return cast<CFICanonicalJumpTableAttr>(this)->printPretty(OS, Policy);
   case attr::CFReturnsNotRetained:
@@ -13613,6 +13737,8 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<PascalAttr>(this)->printPretty(OS, Policy);
   case attr::PassObjectSize:
     return cast<PassObjectSizeAttr>(this)->printPretty(OS, Policy);
+  case attr::PatchableFunctionEntry:
+    return cast<PatchableFunctionEntryAttr>(this)->printPretty(OS, Policy);
   case attr::Pcs:
     return cast<PcsAttr>(this)->printPretty(OS, Policy);
   case attr::Pointer:

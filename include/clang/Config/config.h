@@ -9,7 +9,7 @@
 #define BUG_REPORT_URL "https://bugs.llvm.org/"
 
 /* Default linker to use. */
-#define CLANG_DEFAULT_LINKER ""
+#define CLANG_DEFAULT_LINKER "lld"
 
 /* Default C/ObjC standard to use. */
 /* #undef CLANG_DEFAULT_STD_C */
@@ -61,7 +61,7 @@
 #define CLANG_HAVE_RLIMITS 1
 
 /* The LLVM product name and version */
-#define BACKEND_PACKAGE_STRING "LLVM 10.0.0git"
+#define BACKEND_PACKAGE_STRING "LLVM 11.0.0git"
 
 /* Linker version detected at compile time. */
 /* #undef HOST_LINK_VERSION */
@@ -79,5 +79,8 @@
 #define CLANG_ENABLE_ARCMT 0
 #define CLANG_ENABLE_OBJC_REWRITER 0
 #define CLANG_ENABLE_STATIC_ANALYZER 0
+
+/* Spawn a new process clang.exe for the CC1 tool invocation, when necessary */
+#define CLANG_SPAWN_CC1 0
 
 #endif

@@ -1164,8 +1164,7 @@ class DenseMapIterator : DebugEpochBase::HandleBase {
 
 public:
   using difference_type = ptrdiff_t;
-  using value_type =
-      typename std::conditional<IsConst, const Bucket, Bucket>::type;
+  using value_type = std::conditional_t<IsConst, const Bucket, Bucket>;
   using pointer = value_type *;
   using reference = value_type &;
   using iterator_category = std::forward_iterator_tag;
@@ -1194,7 +1193,7 @@ public:
   // for const iterator destinations so it doesn't end up as a user defined copy
   // constructor.
   template <bool IsConstSrc,
-            typename = typename std::enable_if<!IsConstSrc && IsConst>::type>
+            typename = std::enable_if_t<!IsConstSrc && IsConst>>
   DenseMapIterator(
       const DenseMapIterator<KeyT, ValueT, KeyInfoT, Bucket, IsConstSrc> &I)
       : DebugEpochBase::HandleBase(I), Ptr(I.Ptr), End(I.End) {}

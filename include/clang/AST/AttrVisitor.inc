@@ -128,6 +128,10 @@
   bool VisitArmMveAliasAttr(ArmMveAliasAttr *A) {
     return true; 
   }
+  bool TraverseArmMveStrictPolymorphismAttr(ArmMveStrictPolymorphismAttr *A);
+  bool VisitArmMveStrictPolymorphismAttr(ArmMveStrictPolymorphismAttr *A) {
+    return true; 
+  }
   bool TraverseArtificialAttr(ArtificialAttr *A);
   bool VisitArtificialAttr(ArtificialAttr *A) {
     return true; 
@@ -178,6 +182,10 @@
   }
   bool TraverseCFConsumedAttr(CFConsumedAttr *A);
   bool VisitCFConsumedAttr(CFConsumedAttr *A) {
+    return true; 
+  }
+  bool TraverseCFGuardAttr(CFGuardAttr *A);
+  bool VisitCFGuardAttr(CFGuardAttr *A) {
     return true; 
   }
   bool TraverseCFICanonicalJumpTableAttr(CFICanonicalJumpTableAttr *A);
@@ -880,6 +888,10 @@
   bool VisitPassObjectSizeAttr(PassObjectSizeAttr *A) {
     return true; 
   }
+  bool TraversePatchableFunctionEntryAttr(PatchableFunctionEntryAttr *A);
+  bool VisitPatchableFunctionEntryAttr(PatchableFunctionEntryAttr *A) {
+    return true; 
+  }
   bool TraversePcsAttr(PcsAttr *A);
   bool VisitPcsAttr(PcsAttr *A) {
     return true; 
@@ -1507,6 +1519,15 @@ bool VISITORCLASS<Derived>::TraverseArmMveAliasAttr(ArmMveAliasAttr *A) {
 }
 
 template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseArmMveStrictPolymorphismAttr(ArmMveStrictPolymorphismAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitArmMveStrictPolymorphismAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
 bool VISITORCLASS<Derived>::TraverseArtificialAttr(ArtificialAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
@@ -1647,6 +1668,15 @@ bool VISITORCLASS<Derived>::TraverseCFConsumedAttr(CFConsumedAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
   if (!getDerived().VisitCFConsumedAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseCFGuardAttr(CFGuardAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitCFGuardAttr(A))
     return false;
   return true;
 }
@@ -3321,6 +3351,15 @@ bool VISITORCLASS<Derived>::TraversePassObjectSizeAttr(PassObjectSizeAttr *A) {
 }
 
 template <typename Derived>
+bool VISITORCLASS<Derived>::TraversePatchableFunctionEntryAttr(PatchableFunctionEntryAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitPatchableFunctionEntryAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
 bool VISITORCLASS<Derived>::TraversePcsAttr(PcsAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
@@ -4135,6 +4174,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseArgumentWithTypeTagAttr(cast<ArgumentWithTypeTagAttr>(A));
     case attr::ArmMveAlias:
       return getDerived().TraverseArmMveAliasAttr(cast<ArmMveAliasAttr>(A));
+    case attr::ArmMveStrictPolymorphism:
+      return getDerived().TraverseArmMveStrictPolymorphismAttr(cast<ArmMveStrictPolymorphismAttr>(A));
     case attr::Artificial:
       return getDerived().TraverseArtificialAttr(cast<ArtificialAttr>(A));
     case attr::AsmLabel:
@@ -4161,6 +4202,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseCFAuditedTransferAttr(cast<CFAuditedTransferAttr>(A));
     case attr::CFConsumed:
       return getDerived().TraverseCFConsumedAttr(cast<CFConsumedAttr>(A));
+    case attr::CFGuard:
+      return getDerived().TraverseCFGuardAttr(cast<CFGuardAttr>(A));
     case attr::CFICanonicalJumpTable:
       return getDerived().TraverseCFICanonicalJumpTableAttr(cast<CFICanonicalJumpTableAttr>(A));
     case attr::CFReturnsNotRetained:
@@ -4511,6 +4554,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraversePascalAttr(cast<PascalAttr>(A));
     case attr::PassObjectSize:
       return getDerived().TraversePassObjectSizeAttr(cast<PassObjectSizeAttr>(A));
+    case attr::PatchableFunctionEntry:
+      return getDerived().TraversePatchableFunctionEntryAttr(cast<PatchableFunctionEntryAttr>(A));
     case attr::Pcs:
       return getDerived().TraversePcsAttr(cast<PcsAttr>(A));
     case attr::Pointer:

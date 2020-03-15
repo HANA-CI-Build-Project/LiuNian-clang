@@ -289,6 +289,12 @@
     New->setImplicit(isImplicit);
     break;
   }
+  case attr::ArmMveStrictPolymorphism: {
+    bool isImplicit = Record.readInt();
+    New = new (Context) ArmMveStrictPolymorphismAttr(Context, Info);
+    New->setImplicit(isImplicit);
+    break;
+  }
   case attr::Artificial: {
     bool isInherited = Record.readInt();
     bool isImplicit = Record.readInt();
@@ -418,6 +424,15 @@
     bool isInherited = Record.readInt();
     bool isImplicit = Record.readInt();
     New = new (Context) CFConsumedAttr(Context, Info);
+    cast<InheritableAttr>(New)->setInherited(isInherited);
+    New->setImplicit(isImplicit);
+    break;
+  }
+  case attr::CFGuard: {
+    bool isInherited = Record.readInt();
+    bool isImplicit = Record.readInt();
+    CFGuardAttr::GuardArg guard(static_cast<CFGuardAttr::GuardArg>(Record.readInt()));
+    New = new (Context) CFGuardAttr(Context, Info, guard);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;
@@ -1948,6 +1963,16 @@
     bool isImplicit = Record.readInt();
     int type = Record.readInt();
     New = new (Context) PassObjectSizeAttr(Context, Info, type);
+    cast<InheritableAttr>(New)->setInherited(isInherited);
+    New->setImplicit(isImplicit);
+    break;
+  }
+  case attr::PatchableFunctionEntry: {
+    bool isInherited = Record.readInt();
+    bool isImplicit = Record.readInt();
+    unsigned count = Record.readInt();
+    int offset = Record.readInt();
+    New = new (Context) PatchableFunctionEntryAttr(Context, Info, count, offset);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;

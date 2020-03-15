@@ -1,4 +1,4 @@
-/* generated for  gcc (Debian 9.2.1-21) 9.2.1 20191130 */
+/* generated for  gcc (Debian 9.2.1-25) 9.2.1 20200123 */
 
 #ifndef GCC_GENERATED_STDINT_H
 #define GCC_GENERATED_STDINT_H 1

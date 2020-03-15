@@ -165,6 +165,10 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
       const auto *A = cast<ArmMveAliasAttr>(At);
       return A->clone(C);
     }
+    case attr::ArmMveStrictPolymorphism: {
+      const auto *A = cast<ArmMveStrictPolymorphismAttr>(At);
+      return A->clone(C);
+    }
     case attr::Artificial: {
       const auto *A = cast<ArtificialAttr>(At);
       return A->clone(C);
@@ -248,6 +252,10 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
     }
     case attr::CFConsumed: {
       const auto *A = cast<CFConsumedAttr>(At);
+      return A->clone(C);
+    }
+    case attr::CFGuard: {
+      const auto *A = cast<CFGuardAttr>(At);
       return A->clone(C);
     }
     case attr::CFICanonicalJumpTable: {
@@ -1002,6 +1010,10 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
       const auto *A = cast<PassObjectSizeAttr>(At);
       return A->clone(C);
     }
+    case attr::PatchableFunctionEntry: {
+      const auto *A = cast<PatchableFunctionEntryAttr>(At);
+      return A->clone(C);
+    }
     case attr::Pcs: {
       const auto *A = cast<PcsAttr>(At);
       return A->clone(C);
@@ -1474,6 +1486,9 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
     case attr::ArmMveAlias: {
       return nullptr;
     }
+    case attr::ArmMveStrictPolymorphism: {
+      return nullptr;
+    }
     case attr::Artificial: {
       return nullptr;
     }
@@ -1511,6 +1526,9 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
       return nullptr;
     }
     case attr::CFConsumed: {
+      return nullptr;
+    }
+    case attr::CFGuard: {
       return nullptr;
     }
     case attr::CFICanonicalJumpTable: {
@@ -2038,6 +2056,9 @@ Attr *instantiateTemplateAttributeForDecl(const Attr *At,
       return nullptr;
     }
     case attr::PassObjectSize: {
+      return nullptr;
+    }
+    case attr::PatchableFunctionEntry: {
       return nullptr;
     }
     case attr::Pcs: {

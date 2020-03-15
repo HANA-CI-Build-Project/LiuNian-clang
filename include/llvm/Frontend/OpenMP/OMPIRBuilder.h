@@ -48,7 +48,7 @@ public:
   /// A finalize callback knows about all objects that need finalization, e.g.
   /// destruction, when the scope of the currently generated construct is left
   /// at the time, and location, the callback is invoked.
-  using FinalizeCallbackTy = std::function<void(InsertPointTy /* CodeGenIP */)>;
+  using FinalizeCallbackTy = std::function<void(InsertPointTy CodeGenIP)>;
 
   struct FinalizationInfo {
     /// The finalization callback provided by the last in-flight invocation of
@@ -88,9 +88,9 @@ public:
   /// \param ContinuationBB is the basic block target to leave the body.
   ///
   /// Note that all blocks pointed to by the arguments have terminators.
-  using BodyGenCallbackTy = function_ref<void(
-      InsertPointTy /* AllocaIP */, InsertPointTy /* CodeGenIP */,
-      BasicBlock & /* ContinuationBB */)>;
+  using BodyGenCallbackTy =
+      function_ref<void(InsertPointTy AllocaIP, InsertPointTy CodeGenIP,
+                        BasicBlock &ContinuationBB)>;
 
   /// Callback type for variable privatization (think copy & default
   /// constructor).
@@ -106,8 +106,8 @@ public:
   /// \returns The new insertion point where code generation continues and
   ///          \p ReplVal the replacement of \p Val.
   using PrivatizeCallbackTy = function_ref<InsertPointTy(
-      InsertPointTy /* AllocaIP */, InsertPointTy /* CodeGenIP */,
-      Value & /* Val */, Value *& /* ReplVal */)>;
+      InsertPointTy AllocaIP, InsertPointTy CodeGenIP, Value &Val,
+      Value *&ReplVal)>;
 
   /// Description of a LLVM-IR insertion point (IP) and a debug/source location
   /// (filename, line, column, ...).
@@ -168,7 +168,13 @@ public:
                  Value *IfCondition, Value *NumThreads,
                  omp::ProcBindKind ProcBind, bool IsCancellable);
 
+  /// Generator for '#omp flush'
+  ///
+  /// \param Loc The location where the flush directive was encountered
+  void CreateFlush(const LocationDescription &Loc);
+
   ///}
+
 
 private:
   /// Update the internal location to \p Loc.
@@ -213,6 +219,11 @@ private:
   InsertPointTy emitBarrierImpl(const LocationDescription &Loc,
                                 omp::Directive DK, bool ForceSimpleCall,
                                 bool CheckCancelFlag);
+
+  /// Generate a flush runtime call.
+  ///
+  /// \param Loc The location at which the request originated and is fulfilled.
+  void emitFlush(const LocationDescription &Loc);
 
   /// The finalization stack made up of finalize callbacks currently in-flight,
   /// wrapped into FinalizationInfo objects that reference also the finalization

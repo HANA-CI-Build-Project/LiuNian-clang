@@ -1703,6 +1703,46 @@ public:
   static bool classof(const Attr *A) { return A->getKind() == attr::ArmMveAlias; }
 };
 
+class ArmMveStrictPolymorphismAttr : public TypeAttr {
+public:
+  static ArmMveStrictPolymorphismAttr *CreateImplicit(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo = {SourceRange{}}) {
+    auto *A = new (Ctx) ArmMveStrictPolymorphismAttr(Ctx, CommonInfo);
+    A->setImplicit(true);
+    if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+      A->setAttributeSpellingListIndex(0);
+    return A;
+  }
+
+  static ArmMveStrictPolymorphismAttr *Create(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo = {SourceRange{}}) {
+    auto *A = new (Ctx) ArmMveStrictPolymorphismAttr(Ctx, CommonInfo);
+    if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+      A->setAttributeSpellingListIndex(0);
+    return A;
+  }
+
+  static ArmMveStrictPolymorphismAttr *CreateImplicit(ASTContext &Ctx, SourceRange Range, AttributeCommonInfo::Syntax Syntax) {
+    AttributeCommonInfo I(Range, NoSemaHandlerAttribute, Syntax);
+    return CreateImplicit(Ctx, I);
+  }
+  static ArmMveStrictPolymorphismAttr *Create(ASTContext &Ctx, SourceRange Range, AttributeCommonInfo::Syntax Syntax) {
+    AttributeCommonInfo I(Range, NoSemaHandlerAttribute, Syntax);
+    return Create(Ctx, I);
+  }
+  ArmMveStrictPolymorphismAttr(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo
+             )
+    : TypeAttr(Ctx, CommonInfo, attr::ArmMveStrictPolymorphism, false)
+  {
+  }
+
+  ArmMveStrictPolymorphismAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::ArmMveStrictPolymorphism; }
+};
+
 class ArtificialAttr : public InheritableAttr {
 public:
   static ArtificialAttr *CreateImplicit(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo = {SourceRange{}}) {
@@ -2567,6 +2607,76 @@ public:
   static bool classof(const Attr *A) { return A->getKind() == attr::CFConsumed; }
 };
 
+class CFGuardAttr : public InheritableAttr {
+public:
+  enum GuardArg {
+    nocf
+  };
+private:
+  GuardArg guard;
+
+public:
+  static CFGuardAttr *CreateImplicit(ASTContext &Ctx, GuardArg Guard, const AttributeCommonInfo &CommonInfo = {SourceRange{}}) {
+    auto *A = new (Ctx) CFGuardAttr(Ctx, CommonInfo, Guard);
+    A->setImplicit(true);
+    if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+      A->setAttributeSpellingListIndex(0);
+    return A;
+  }
+
+  static CFGuardAttr *Create(ASTContext &Ctx, GuardArg Guard, const AttributeCommonInfo &CommonInfo = {SourceRange{}}) {
+    auto *A = new (Ctx) CFGuardAttr(Ctx, CommonInfo, Guard);
+    if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+      A->setAttributeSpellingListIndex(0);
+    return A;
+  }
+
+  static CFGuardAttr *CreateImplicit(ASTContext &Ctx, GuardArg Guard, SourceRange Range, AttributeCommonInfo::Syntax Syntax) {
+    AttributeCommonInfo I(Range, NoSemaHandlerAttribute, Syntax);
+    return CreateImplicit(Ctx, Guard, I);
+  }
+  static CFGuardAttr *Create(ASTContext &Ctx, GuardArg Guard, SourceRange Range, AttributeCommonInfo::Syntax Syntax) {
+    AttributeCommonInfo I(Range, NoSemaHandlerAttribute, Syntax);
+    return Create(Ctx, Guard, I);
+  }
+  CFGuardAttr(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo
+              , GuardArg Guard
+             )
+    : InheritableAttr(Ctx, CommonInfo, attr::CFGuard, false, false)
+              , guard(Guard)
+  {
+  }
+
+  CFGuardAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+  GuardArg getGuard() const {
+    return guard;
+  }
+
+  static bool ConvertStrToGuardArg(StringRef Val, GuardArg &Out) {
+    Optional<GuardArg> R = llvm::StringSwitch<Optional<GuardArg>>(Val)
+      .Case("nocf", CFGuardAttr::nocf)
+      .Default(Optional<GuardArg>());
+    if (R) {
+      Out = *R;
+      return true;
+    }
+    return false;
+  }
+
+  static const char *ConvertGuardArgToStr(GuardArg Val) {
+    switch(Val) {
+    case CFGuardAttr::nocf: return "nocf";
+    }
+    llvm_unreachable("No enumerator with that value");
+  }
+
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::CFGuard; }
+};
+
 class CFICanonicalJumpTableAttr : public InheritableAttr {
 public:
   static CFICanonicalJumpTableAttr *CreateImplicit(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo = {SourceRange{}}) {
@@ -3418,9 +3528,6 @@ public:
   }
 
 
-    bool isMutex() const { return getName().equals_lower("mutex"); }
-    bool isRole() const { return getName().equals_lower("role"); }
-  
 
   static bool classof(const Attr *A) { return A->getKind() == attr::Capability; }
 };
@@ -11758,6 +11865,73 @@ public:
 
 
   static bool classof(const Attr *A) { return A->getKind() == attr::PassObjectSize; }
+};
+
+class PatchableFunctionEntryAttr : public InheritableAttr {
+unsigned count;
+
+int offset;
+
+public:
+  static PatchableFunctionEntryAttr *CreateImplicit(ASTContext &Ctx, unsigned Count, int Offset, const AttributeCommonInfo &CommonInfo = {SourceRange{}}) {
+    auto *A = new (Ctx) PatchableFunctionEntryAttr(Ctx, CommonInfo, Count, Offset);
+    A->setImplicit(true);
+    if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+      A->setAttributeSpellingListIndex(0);
+    return A;
+  }
+
+  static PatchableFunctionEntryAttr *Create(ASTContext &Ctx, unsigned Count, int Offset, const AttributeCommonInfo &CommonInfo = {SourceRange{}}) {
+    auto *A = new (Ctx) PatchableFunctionEntryAttr(Ctx, CommonInfo, Count, Offset);
+    if (!A->isAttributeSpellingListCalculated() && !A->getAttrName())
+      A->setAttributeSpellingListIndex(0);
+    return A;
+  }
+
+  static PatchableFunctionEntryAttr *CreateImplicit(ASTContext &Ctx, unsigned Count, int Offset, SourceRange Range, AttributeCommonInfo::Syntax Syntax) {
+    AttributeCommonInfo I(Range, NoSemaHandlerAttribute, Syntax);
+    return CreateImplicit(Ctx, Count, Offset, I);
+  }
+  static PatchableFunctionEntryAttr *Create(ASTContext &Ctx, unsigned Count, int Offset, SourceRange Range, AttributeCommonInfo::Syntax Syntax) {
+    AttributeCommonInfo I(Range, NoSemaHandlerAttribute, Syntax);
+    return Create(Ctx, Count, Offset, I);
+  }
+  PatchableFunctionEntryAttr(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo
+              , unsigned Count
+              , int Offset
+             )
+    : InheritableAttr(Ctx, CommonInfo, attr::PatchableFunctionEntry, false, false)
+              , count(Count)
+              , offset(Offset)
+  {
+  }
+
+  PatchableFunctionEntryAttr(ASTContext &Ctx, const AttributeCommonInfo &CommonInfo
+              , unsigned Count
+             )
+    : InheritableAttr(Ctx, CommonInfo, attr::PatchableFunctionEntry, false, false)
+              , count(Count)
+              , offset()
+  {
+  }
+
+  PatchableFunctionEntryAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+  unsigned getCount() const {
+    return count;
+  }
+
+  int getOffset() const {
+    return offset;
+  }
+
+  static const int DefaultOffset = 0;
+
+
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::PatchableFunctionEntry; }
 };
 
 class PcsAttr : public InheritableAttr {

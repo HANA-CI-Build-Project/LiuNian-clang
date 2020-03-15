@@ -81,6 +81,7 @@
     experimental_constrained_floor,            // llvm.experimental.constrained.floor
     experimental_constrained_fma,              // llvm.experimental.constrained.fma
     experimental_constrained_fmul,             // llvm.experimental.constrained.fmul
+    experimental_constrained_fmuladd,          // llvm.experimental.constrained.fmuladd
     experimental_constrained_fpext,            // llvm.experimental.constrained.fpext
     experimental_constrained_fptosi,           // llvm.experimental.constrained.fptosi
     experimental_constrained_fptoui,           // llvm.experimental.constrained.fptoui
@@ -182,6 +183,7 @@
     maxnum,                                    // llvm.maxnum
     memcpy,                                    // llvm.memcpy
     memcpy_element_unordered_atomic,           // llvm.memcpy.element.unordered.atomic
+    memcpy_inline,                             // llvm.memcpy.inline
     memmove,                                   // llvm.memmove
     memmove_element_unordered_atomic,          // llvm.memmove.element.unordered.atomic
     memset,                                    // llvm.memset
@@ -236,6 +238,7 @@
     round,                                     // llvm.round
     sadd_sat,                                  // llvm.sadd.sat
     sadd_with_overflow,                        // llvm.sadd.with.overflow
+    sdiv_fix,                                  // llvm.sdiv.fix
     set_loop_iterations,                       // llvm.set.loop.iterations
     sideeffect,                                // llvm.sideeffect
     sin,                                       // llvm.sin
@@ -260,6 +263,7 @@
     type_test,                                 // llvm.type.test
     uadd_sat,                                  // llvm.uadd.sat
     uadd_with_overflow,                        // llvm.uadd.with.overflow
+    udiv_fix,                                  // llvm.udiv.fix
     umul_fix,                                  // llvm.umul.fix
     umul_fix_sat,                              // llvm.umul.fix.sat
     umul_with_overflow,                        // llvm.umul.with.overflow
@@ -269,7 +273,8 @@
     vaend,                                     // llvm.va_end
     vastart,                                   // llvm.va_start
     var_annotation,                            // llvm.var.annotation
+    vscale,                                    // llvm.vscale
     write_register,                            // llvm.write_register
     xray_customevent,                          // llvm.xray.customevent
     xray_typedevent,                           // llvm.xray.typedevent
-    num_intrinsics = 7532
+    num_intrinsics = 7691

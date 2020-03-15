@@ -220,6 +220,10 @@ Record.push_back(SA->getInterrupt());
     Record.AddIdentifierRef(SA->getBuiltinName());
     break;
   }
+  case attr::ArmMveStrictPolymorphism: {
+    Record.push_back(A->isImplicit());
+    break;
+  }
   case attr::Artificial: {
     const auto *SA = cast<ArtificialAttr>(A);
     Record.push_back(SA->isInherited());
@@ -319,6 +323,13 @@ Record.push_back(SA->getType());
     const auto *SA = cast<CFConsumedAttr>(A);
     Record.push_back(SA->isInherited());
     Record.push_back(A->isImplicit());
+    break;
+  }
+  case attr::CFGuard: {
+    const auto *SA = cast<CFGuardAttr>(A);
+    Record.push_back(SA->isInherited());
+    Record.push_back(A->isImplicit());
+Record.push_back(SA->getGuard());
     break;
   }
   case attr::CFICanonicalJumpTable: {
@@ -1451,6 +1462,14 @@ Record.push_back(SA->getParamState());
     Record.push_back(SA->isInherited());
     Record.push_back(A->isImplicit());
     Record.push_back(SA->getType());
+    break;
+  }
+  case attr::PatchableFunctionEntry: {
+    const auto *SA = cast<PatchableFunctionEntryAttr>(A);
+    Record.push_back(SA->isInherited());
+    Record.push_back(A->isImplicit());
+    Record.push_back(SA->getCount());
+    Record.push_back(SA->getOffset());
     break;
   }
   case attr::Pcs: {

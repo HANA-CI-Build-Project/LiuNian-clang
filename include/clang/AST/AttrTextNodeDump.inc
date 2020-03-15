@@ -125,6 +125,14 @@
       break;
     }
   }
+  void VisitCFGuardAttr(const CFGuardAttr *A) {
+    const auto *SA = cast<CFGuardAttr>(A); (void)SA;
+    switch(SA->getGuard()) {
+    case CFGuardAttr::nocf:
+      OS << " nocf";
+      break;
+    }
+  }
   void VisitCPUDispatchAttr(const CPUDispatchAttr *A) {
     const auto *SA = cast<CPUDispatchAttr>(A); (void)SA;
     for (const auto &Val : SA->cpus())
@@ -605,6 +613,11 @@
     const auto *SA = cast<PassObjectSizeAttr>(A); (void)SA;
     OS << " " << A->getSpelling();
     OS << " " << SA->getType();
+  }
+  void VisitPatchableFunctionEntryAttr(const PatchableFunctionEntryAttr *A) {
+    const auto *SA = cast<PatchableFunctionEntryAttr>(A); (void)SA;
+    OS << " " << SA->getCount();
+    OS << " " << SA->getOffset();
   }
   void VisitPcsAttr(const PcsAttr *A) {
     const auto *SA = cast<PcsAttr>(A); (void)SA;

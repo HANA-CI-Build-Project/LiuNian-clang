@@ -228,6 +228,15 @@
         return 2;
     break;
   }
+  case AT_ArmMveStrictPolymorphism: {
+    if (Name == "__clang_arm_mve_strict_polymorphism" && getSyntax() == AttributeCommonInfo::AS_GNU && Scope == "")
+        return 0;
+    if (Name == "__clang_arm_mve_strict_polymorphism" && getSyntax() == AttributeCommonInfo::AS_CXX11 && Scope == "clang")
+        return 1;
+    if (Name == "__clang_arm_mve_strict_polymorphism" && getSyntax() == AttributeCommonInfo::AS_C2x && Scope == "clang")
+        return 2;
+    break;
+  }
   case AT_Artificial: {
     if (Name == "artificial" && getSyntax() == AttributeCommonInfo::AS_GNU && Scope == "")
         return 0;
@@ -317,6 +326,11 @@
         return 1;
     if (Name == "cf_consumed" && getSyntax() == AttributeCommonInfo::AS_C2x && Scope == "clang")
         return 2;
+    break;
+  }
+  case AT_CFGuard: {
+    if (Name == "guard" && getSyntax() == AttributeCommonInfo::AS_Declspec && Scope == "")
+        return 0;
     break;
   }
   case AT_CFICanonicalJumpTable: {
@@ -1696,6 +1710,13 @@
         return 4;
     if (Name == "pass_dynamic_object_size" && getSyntax() == AttributeCommonInfo::AS_C2x && Scope == "clang")
         return 5;
+    break;
+  }
+  case AT_PatchableFunctionEntry: {
+    if (Name == "patchable_function_entry" && getSyntax() == AttributeCommonInfo::AS_GNU && Scope == "")
+        return 0;
+    if (Name == "patchable_function_entry" && getSyntax() == AttributeCommonInfo::AS_CXX11 && Scope == "gnu")
+        return 1;
     break;
   }
   case AT_Pcs: {
